@@ -1,0 +1,29 @@
+// {
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "Python 디버거: 현재 파일",
+//             "type": "python",
+//             "cwd": "${workspaceFolder}",
+//             "justMyCode": true,
+//             "request": "launch",
+//             "program": "transformer_ddp_mp_test.py",
+//             "console": "integratedTerminal"
+//         }
+//     ]
+// }
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python 디버거: 현재 파일",
+            "type": "python",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true,
+            "request": "launch",
+            "program": "train.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

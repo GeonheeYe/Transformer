@@ -1,0 +1,30 @@
+batch_size : 200
+seed : 42
+d_model : 256
+n_head : 4
+max_len : 512 
+temperature : 10000 
+ffn_hidden : 1024
+p_drop : 0.1
+n_layers : 4
+learning_rate : 0.0001
+warmup_steps : 4000
+epochs : 200
+clip : 1.0 
+num_workers : 16
+
+tokenizer_model_name : "Helsinki-NLP/opus-mt-ko-en"
+dataset_name : "bongsoo/news_talk_en_ko"
+output_path : ENG_KOR_translation
+
+# early stopping
+patience : 5
+
+# retrain 유무 
+retrain : False
+
+# DDP로 학습 유무
+is_DDP : False
+
+# BLEU 측정하는데 오래걸림
+BLEU_mode : False
