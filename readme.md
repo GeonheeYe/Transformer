@@ -1,14 +1,16 @@
 ## Source Code Structure
 
-📦Xqbot
- ┣ 📂
- ┃ ┣ 📂
- ┃ ┣ 📂
- ┣ 📂
- ┃ ┣ 📂
- ┃ ┣ 📂
- ┣ 📂
- ┃ ┣ 📜
- ┗ 📜README.md
- ┗ 📜Dockerfile
- ┗ 📜requirements.txt
+📦Transformer \
+ ┣ 📂core \
+ ┃ ┣ 📜BLEU.py \
+ ┃ ┣ 📜evaluate.py \
+ ┃ ┣ 📜make_dataset.py \
+ ┃ ┗ 📜utils.py \
+ ┣ 📂models\
+ ┃ ┣ 📂 encoding \
+ ┃ ┣ 📂 layers \
+ ┃ ┗ 📂 model \
+ ┣ 📜config.yaml \
+ ┣ 📜readme.md \
+ ┗ 📜train.py 
+
