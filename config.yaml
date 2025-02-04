@@ -1,4 +1,4 @@
-batch_size : 200
+batch_size : 2
 seed : 42
 d_model : 256
 n_head : 4

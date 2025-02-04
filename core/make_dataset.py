@@ -54,11 +54,8 @@ class MakeDataset:
     def build_dataset(self, config):
         ds = load_dataset(config['dataset_name'])
 
-        # ds_train = ds["train"][:1100000]
-        # ds_val = ds["train"][1100000:]
-        
-        ds_train = ds["train"][:2000]
-        ds_val = ds["train"][200:300]
+        ds_train = ds["train"][:1100000]
+        ds_val = ds["train"][1100000:]
         
         train_engs = ds_train["Skinner's reward is mostly eye-watering."]
         train_kors = ds_train["스키너가 말한 보상은 대부분 눈으로 볼 수 있는 현물이다."]
