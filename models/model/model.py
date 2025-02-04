@@ -1,7 +1,8 @@
 from torch import nn
 from models.encoding.positional_encoding import PositionalEncoding
 from models.model.encoder import Encoder
-from models.model.decoder import Decoder
+from models.model.decoder import Decoder, DecoderOnly
+
 
 class Transformer(nn.Module):
     def __init__(self, d_model, max_len, temperature, n_head, ffn_hidden, p_drop, n_layers, tokenizer, device):
@@ -60,6 +61,51 @@ class Transformer(nn.Module):
                                     tgt=decoder_out,
                                     enc=encoder_out,
                                     src_mask=src_mask,
+                                    tgt_mask=tgt_mask,
+                                    )
+
+        out = self.Linear(decoder_out)
+        return out 
+
+
+# Decoder only model
+class DecoderOnlyModel(nn.Module):
+    def __init__(self, d_model, max_len, temperature, n_head, ffn_hidden, p_drop, n_layers, tokenizer, device):
+        super().__init__()    
+        # embedding
+        self.tgt_embedding = nn.Embedding(tokenizer.vocab_size, d_model, padding_idx=tokenizer.pad_token_id)
+        self.dropout1 = nn.Dropout(p=p_drop)
+
+        # positional_encoding
+        self.positional_encoding = PositionalEncoding(
+                                                        d_model=d_model,
+                                                        max_len=max_len, 
+                                                        temperature=temperature, 
+                                                        device=device, 
+                                                        )
+
+        self.Decoder = nn.ModuleList([DecoderOnly(
+                                                d_model=d_model,
+                                                n_head=n_head,
+                                                ffn_hidden=ffn_hidden,
+                                                p_drop=p_drop,
+                                                )
+                                     for _ in range(n_layers)])
+
+        self.Linear = nn.Linear(d_model, tokenizer.vocab_size)
+
+    def forward(self, tgt, tgt_mask):
+        # embedding
+        em_tgt = self.tgt_embedding(tgt)  
+
+        # positional_encoding
+        tgt_pos = self.positional_encoding(tgt)
+
+        decoder_out = em_tgt + tgt_pos
+        decoder_out = self.dropout1(decoder_out)
+        for i, decoder in enumerate(self.Decoder):
+            decoder_out = decoder(
+                                    tgt=decoder_out,
                                     tgt_mask=tgt_mask,
                                     )
 

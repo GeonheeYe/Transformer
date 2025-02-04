@@ -2,7 +2,7 @@
 from core.utils import *
 from core.make_dataset import *
 from core.evaluate import * 
-from models.model.transformer import Transformer
+from models.model.model import *
 
 # module
 import os
@@ -18,6 +18,7 @@ from torch import nn
 from torch.optim.lr_scheduler import _LRScheduler
 import torch.distributed as dist
 from torch.utils.tensorboard import SummaryWriter
+
 
 def data_distributed_parallel(config):
     dist.init_process_group(backend="nccl")
@@ -55,10 +56,10 @@ def run(config):
     random.seed(seed)
 
     # make dataset
-    dataset = MakeDataset(pretrained_model=config['tokenizer_model_name'])
+    dataset = DecoderOnlyDataset(pretrained_model=config['tokenizer_model_name'])
 
     # model build
-    model = Transformer( 
+    model = DecoderOnlyModel( 
                         d_model=config['d_model'],
                         max_len=config['max_len'],
                         temperature=config['temperature'],
@@ -129,13 +130,15 @@ def run(config):
     for epoch in range(config['epochs']):
         model.train()
         epoch_loss = 0
+        tgt_len = 0 
+        for batch_idx, (targets) in enumerate(tqdm(train_loader)):        
+            tgt, tgt_mask = dataset(targets)
+            tgt_len = max(tgt_len, tgt.shape[1])
 
-        for batch_idx, (srcs, targets) in enumerate(tqdm(train_loader)):        
-            src, tgt, src_mask, tgt_mask = dataset(srcs, targets)
             # initialize optimizer  
             optimizer.zero_grad()
     
-            output = model(src=src, tgt=tgt[:, :-1], src_mask=src_mask, tgt_mask=tgt_mask[:, :, :-1, :-1])
+            output = model(tgt=tgt[:, :-1], tgt_mask=tgt_mask[:, :, :-1, :-1])
             
             output1 = output.contiguous().view(-1, output.shape[-1])
             tgt1 = tgt[:, 1:].contiguous().view(-1)           
@@ -153,7 +156,7 @@ def run(config):
 
         lrs.append(optimizer.param_groups[0]['lr'])
         train_loss = epoch_loss / len(train_loader)
-        val_loss, bleu = evaluate(model, val_loader, dataset, criterion, BLEU_mode=config['BLEU_mode'])
+        val_loss, bleu = decoder_only_evaluate(model, val_loader, dataset, criterion, BLEU_mode=config['BLEU_mode'])
         
         # Tensorboard
         writer.add_scalar('Loss/val', val_loss, epoch)
@@ -177,11 +180,12 @@ def run(config):
         
         if patience_count >= patience:
             break
-    
+
     writer.close()
     
     # Draw learning_rate graph
     draw_learning_rate(lrs, output_path)
+    
     
 
 if __name__ == "__main__":

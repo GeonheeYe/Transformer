@@ -12,5 +12,5 @@
  ┃ ┗ 📂 model \
  ┣ 📜config.yaml \
  ┣ 📜readme.md \
- ┗ 📜train.py 
-
+ ┣ 📜train_decoder_only.md \
+ ┗ 📜train_transformer.py 

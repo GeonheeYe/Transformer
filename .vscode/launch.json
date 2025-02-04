@@ -22,7 +22,7 @@
             "cwd": "${workspaceFolder}",
             "justMyCode": true,
             "request": "launch",
-            "program": "train.py",
+            "program": "train_decoder_only.py",
             "console": "integratedTerminal"
         }
     ]
